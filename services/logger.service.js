@@ -17,9 +17,9 @@ function logToFile(level, ...args) {
     })
     const message = `${getTime()} - ${level} - ${strs.join(' | ')}\n`
     console.log(message)
-    return fs.stat(dir)
-        .catch(() => fs.mkdir(dir))
-        .then(() => fs.appendFile(LOG_PATH, strElements, 'utf-8'))
+    return fs.stat(LOGS_DIR)
+        .catch(() => fs.mkdir(LOGS_DIR))
+        .then(() => fs.appendFile(LOG_PATH, message, 'utf-8'))
 }
 
 function isError(arg) {

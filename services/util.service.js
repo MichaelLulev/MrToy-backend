@@ -1,5 +1,5 @@
 import fs from 'fs/promises'
-import { loggerService } from './logger.service'
+import { loggerService } from './logger.service.js'
 
 export const utilService = {
     makeId,
