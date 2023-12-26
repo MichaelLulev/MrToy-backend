@@ -77,7 +77,7 @@ function getPage(toys, pageInfo) {
 }
 
 function get(toyId) {
-    return query().then(toys => {
+    return query().then(({ toys }) => {
             const toy = toys.find(toy => toy._id === toyId)
             if (! toy) return Promise.reject('No such toy')
             return toy
@@ -86,7 +86,7 @@ function get(toyId) {
 
 function save(toy, loggedInUser) {
     if (! loggedInUser.isAdmin) return Promise.reject('Not admin')
-    return query().then(toys => {
+    return query().then(({ toys }) => {
             if (toy._id) {
                 const toyIdx = toys.findIndex(_toy => _toy._id === toy._id)
                 if (toyIdx < 0) return Promise.reject('No such toy')
@@ -110,7 +110,7 @@ function save(toy, loggedInUser) {
 
 function remove(toyId, loggedInUser) {
     if (! loggedInUser.isAdmin) return Promise.reject('Not admin')
-    return query().then(toys => {
+    return query().then(({ toys }) => {
             const toyIdx = toys.findIndex(toy => toy._id === toyId)
             if (toyIdx < 0) return Promise.reject('No such toy')
             const toy = toys[toyIdx]
