@@ -65,11 +65,12 @@ function getPage(toys, pageInfo) {
     if (! pageInfo) return { toys, pageNum: 1, lastPageNum: 1 }
     const toysPerPage = pageInfo.toysPerPage
     const lastPageNum = Math.ceil(toys.length / toysPerPage) || 1
-    const startIdx = (pageInfo.pageNum - 1) * toysPerPage
+    const pageNum = Math.min(Math.max(pageInfo.pageNum, 1), lastPageNum)
+    const startIdx = (pageNum - 1) * toysPerPage
     const endIdx = startIdx + toysPerPage
     const toyPage = {
         toys: toys.slice(startIdx, endIdx),
-        pageNum: Math.min(Math.max(pageInfo.pageNum, 0), lastPageNum),
+        pageNum,
         lastPageNum,
     }
     return toyPage
