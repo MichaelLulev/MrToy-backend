@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import { loggerService } from './logger.service'
 
 export const utilService = {
     makeId,
@@ -23,14 +24,14 @@ function loadFromFile(dir, path, elementsCreator) {
             return elements
         })
         .catch(err => {
-            console.log('Creating elements')
+            loggerService.info('Creating elements')
             const elements = elementsCreator()
             return saveToFile(dir, path, elements).then(() => elements)
         })
 }
 
 function saveToFile(dir, path, elements=[]) {
-    console.log('Saving elements to path ' + path)
+    loggerService.info('Saving elements to path ' + path)
     const strElements = JSON.stringify(elements, null, '\t')
     return fs.stat(dir)
         .catch(() => fs.mkdir(dir))

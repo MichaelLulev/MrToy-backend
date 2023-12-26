@@ -210,4 +210,4 @@ app.get(BASE_USER_API_URL, (req, res) => {
 
 const PORT = 3030
 
-app.listen(PORT, () => console.log(`Server ready at port ${PORT}`))
+app.listen(PORT, () => loggerService.info(`Server ready at port ${PORT}`))

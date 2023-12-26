@@ -87,7 +87,6 @@ function save(toy, loggedInUser) {
                 const toyIdx = toys.findIndex(_toy => _toy._id === toy._id)
                 if (toyIdx < 0) return Promise.reject('No such toy')
                 const toyToEdit = toys[toyIdx]
-                console.log(toy)
                 for (let [key, value] of Object.entries(toy)) {
                     if (value) toyToEdit[key] = value
                 }
