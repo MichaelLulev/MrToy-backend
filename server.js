@@ -130,10 +130,14 @@ app.get(BASE_API_URL_TOY, (req, res) => {
         field: req.query.field,
         isAscending: JSON.parse(req.query.isAscending),
     }
-    toyService.query(filterBy, sortBy)
-        .then(toys => {
+    const pageInfo = {
+        pageNum: +req.query.pageNum,
+        toysPerPage: +req.query.toysPerPage
+    }
+    toyService.query(filterBy, sortBy, pageInfo)
+        .then(toyPage => {
             loggerService.info(`Get toys list`)
-            res.send(toys)
+            res.send(toyPage)
         })
         .catch(err => {
             const message = `Cannot get toys list: ${err}`
@@ -154,7 +158,6 @@ app.post(BASE_API_URL_AUTH + '/signup', (req, res) => {
             const loginToken = userService.getLoginToken(user)
             res.cookie('loginToken', loginToken)
             loggerService.info(`Signup user '${user.username}'`)
-            console.log(user)
             res.send(user)
         })
         .catch(err => {
@@ -178,7 +181,6 @@ app.post(BASE_API_URL_AUTH + '/login', (req, res) => {
             const loginToken = userService.getLoginToken(user)
             res.cookie('loginToken', loginToken)
             loggerService.info(`Login user '${user.username}'`)
-            console.log(user)
             res.send(user)
         })
         .catch(err => {

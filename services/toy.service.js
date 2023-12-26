@@ -31,7 +31,7 @@ function query(filterBy, sortBy, pageInfo) {
         })
         .then(toys => filter(toys, filterBy))
         .then(toys => sort(toys, sortBy))
-        // .then(toys => getPage(toys, pageInfo))
+        .then(toys => getPage(toys, pageInfo))
 }
 
 function filter(toys, filterBy) {
@@ -49,7 +49,6 @@ function filter(toys, filterBy) {
 }
 
 function sort(toys, sortBy) {
-    console.log('sortBy', sortBy)
     if (! sortBy) return toys
     const { field, isAscending } = sortBy
     const dirMult = isAscending ? 1 : -1
@@ -63,14 +62,17 @@ function sort(toys, sortBy) {
 }
 
 function getPage(toys, pageInfo) {
-    if (! pageInfo) return toys
-    let idx = pageInfo.idx || 0
-    const toysPerPage = pageInfo.toysPerPage || toys.length
-    const lastPage = Math.ceil(toys.length / toysPerPage) || 1
-    const startIdx = idx * toysPerPage
+    if (! pageInfo) return { toys, pageNum: 1, lastPageNum: 1 }
+    const toysPerPage = pageInfo.toysPerPage
+    const lastPageNum = Math.ceil(toys.length / toysPerPage) || 1
+    const startIdx = (pageInfo.pageNum - 1) * toysPerPage
     const endIdx = startIdx + toysPerPage
-    const isLastPage = (toys.length === 0) || lastPage <= idx + 1
-    return [toys.slice(startIdx, endIdx), isLastPage, lastPage]
+    const toyPage = {
+        toys: toys.slice(startIdx, endIdx),
+        pageNum: Math.min(Math.max(pageInfo.pageNum, 0), lastPageNum),
+        lastPageNum,
+    }
+    return toyPage
 }
 
 function get(toyId) {
