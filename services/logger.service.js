@@ -15,7 +15,7 @@ function logToFile(level, ...args) {
         if (typeof arg === 'string' || isError(arg)) return arg
         else return JSON.stringify(arg)
     })
-    const message = `${getTime()} - ${level} - ${strs.join(' | ')}\n`
+    const message = `${getTime()} - ${level} - ${strs.join(' | ')}`
     console.log(message)
     return fs.stat(LOGS_DIR)
         .catch(() => fs.mkdir(LOGS_DIR))
@@ -27,5 +27,5 @@ function isError(arg) {
 }
 
 function getTime() {
-    return new Date().toLocaleString()
+    return new Date().toLocaleString('he')
 }
