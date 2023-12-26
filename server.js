@@ -124,11 +124,11 @@ app.delete(BASE_TOY_API_URL + '/:toyId', (req, res) => {
 app.get(BASE_TOY_API_URL, (req, res) => {
     toyService.query()
         .then(toys => {
-            loggerService.info(`Get toys`)
+            loggerService.info(`Get toys list`)
             res.send(toys)
         })
         .catch(err => {
-            const message = `Cannot get toys: ${err}`
+            const message = `Cannot get toys list: ${err}`
             loggerService.error(message)
             res.status(400).send(message)
         })
@@ -196,11 +196,11 @@ app.post(BASE_AUTH_API_URL + '/logout', (req, res) => {
 app.get(BASE_USER_API_URL, (req, res) => {
     userService.query()
         .then(users => {
-            loggerService.info('Get users')
+            loggerService.info('Get users list')
             res.send(users)
         })
         .catch(err => {
-            const message = `Cannot get users: ${err}`
+            const message = `Cannot get users list: ${err}`
             loggerService.error(message)
             res.status(400).send(message)
         })

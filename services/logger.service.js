@@ -8,7 +8,7 @@ export const loggerService = {
 }
 
 const LOGS_DIR = './logs'
-const LOG_PATH = `${LOGS_DIR}/backend-${new Date().toISOString()}.log`
+const LOG_PATH = `${LOGS_DIR}/${new Date().toISOString()}.log`
 
 function logToFile(level, ...args) {
     const strs = args.map(arg => {
