@@ -31,26 +31,27 @@ function query(filterBy, sortBy, pageInfo) {
         })
         .then(toys => filter(toys, filterBy))
         .then(toys => sort(toys, sortBy))
-        .then(toys => getPage(toys, pageInfo))
-        .catch(err => console.error(err) || Promise.reject(err))
+        // .then(toys => getPage(toys, pageInfo))
 }
 
 function filter(toys, filterBy) {
     if (! filterBy) return toys
     return toys.filter(toy => {
-        const { name, description, labels } = toy
-        const text =                filterBy.text ? RegExp(filterBy.text, 'i') : null
-        const isTextInName =        ! text || text.test(name)
-        const isTextInDescription = ! text || text.test(description)
-        const isTextInLabels =      ! text || labels.some(label => text.test(label))
-        return isTextInName || isTextInDescription || isTextInLabels
+        let isStockMatch
+        if      (filterBy.stock === 'any') isStockMatch = true
+        else if (filterBy.stock === 'yes') isStockMatch = 0 < toy.stock
+        else if (filterBy.stock === 'no' ) isStockMatch = toy.stock === 0
+        const text =                RegExp(filterBy.text, 'i')
+        const isTextInName =        text.test(toy.name)
+        const isTextInDescription = text.test(toy.description)
+        return (isTextInName || isTextInDescription) && isStockMatch
     })
 }
 
 function sort(toys, sortBy) {
+    console.log('sortBy', sortBy)
     if (! sortBy) return toys
     const { field, isAscending } = sortBy
-    if (! field || typeof isAscending !== 'boolean') return  toys
     const dirMult = isAscending ? 1 : -1
     return toys.sort((toy1, toy2) => {
         switch (field) {
@@ -119,6 +120,7 @@ function getNewToy() {
     return {
         name: '',
         description: '',
-        labels: [],
+        price: 0,
+        stock: 0,
     }
 }

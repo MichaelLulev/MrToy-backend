@@ -7,9 +7,9 @@ import { loggerService } from './services/logger.service.js'
 
 
 const BASE_API_URL = '/api/'
-const BASE_TOY_API_URL = BASE_API_URL + 'toy'
-const BASE_AUTH_API_URL = BASE_API_URL + 'auth'
-const BASE_USER_API_URL = BASE_API_URL + 'user'
+const BASE_API_URL_TOY = BASE_API_URL + 'toy'
+const BASE_API_URL_AUTH = BASE_API_URL + 'auth'
+const BASE_API_URL_USER = BASE_API_URL + 'user'
 
 
 const app = express()
@@ -34,7 +34,7 @@ app.use(express.json())
 // ----------
 
 // Toy create
-app.post(BASE_TOY_API_URL, (req, res) => {
+app.post(BASE_API_URL_TOY, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
         const message = 'Cannot add toy: Not logged in'
@@ -59,7 +59,7 @@ app.post(BASE_TOY_API_URL, (req, res) => {
 })
 
 // Toy read
-app.get(BASE_TOY_API_URL + '/:toyId', (req, res) => {
+app.get(BASE_API_URL_TOY + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     toyService.get(toyId)
         .then(toy => {
@@ -74,7 +74,7 @@ app.get(BASE_TOY_API_URL + '/:toyId', (req, res) => {
 })
 
 // Toy update
-app.put(BASE_TOY_API_URL, (req, res) => {
+app.put(BASE_API_URL_TOY, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
         const message = 'Cannot update toy: Not logged in'
@@ -100,7 +100,7 @@ app.put(BASE_TOY_API_URL, (req, res) => {
 })
 
 // Toy delete
-app.delete(BASE_TOY_API_URL + '/:toyId', (req, res) => {
+app.delete(BASE_API_URL_TOY + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
@@ -121,8 +121,16 @@ app.delete(BASE_TOY_API_URL + '/:toyId', (req, res) => {
 })
 
 // Toy list
-app.get(BASE_TOY_API_URL, (req, res) => {
-    toyService.query()
+app.get(BASE_API_URL_TOY, (req, res) => {
+    const filterBy = {
+        text: req.query.text,
+        stock: req.query.stock,
+    }
+    const sortBy = {
+        field: req.query.field,
+        isAscending: JSON.parse(req.query.isAscending),
+    }
+    toyService.query(filterBy, sortBy)
         .then(toys => {
             loggerService.info(`Get toys list`)
             res.send(toys)
@@ -139,13 +147,14 @@ app.get(BASE_TOY_API_URL, (req, res) => {
 // ----------
 
 // User signup
-app.post(BASE_AUTH_API_URL + '/signup', (req, res) => {
+app.post(BASE_API_URL_AUTH + '/signup', (req, res) => {
     const formUser = req.body
     userService.save(formUser)
         .then(user => {
             const loginToken = userService.getLoginToken(user)
             res.cookie('loginToken', loginToken)
-            loggerService.info(`Signup username='${user.username}'`)
+            loggerService.info(`Signup user '${user.username}'`)
+            console.log(user)
             res.send(user)
         })
         .catch(err => {
@@ -156,7 +165,7 @@ app.post(BASE_AUTH_API_URL + '/signup', (req, res) => {
 })
 
 // User login
-app.post(BASE_AUTH_API_URL + '/login', (req, res) => {
+app.post(BASE_API_URL_AUTH + '/login', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if(loggedInUser) {
         const message = 'Cannot login: Already logged in'
@@ -168,7 +177,8 @@ app.post(BASE_AUTH_API_URL + '/login', (req, res) => {
         .then(user => {
             const loginToken = userService.getLoginToken(user)
             res.cookie('loginToken', loginToken)
-            loggerService.info(`Login username='${user.username}'`)
+            loggerService.info(`Login user '${user.username}'`)
+            console.log(user)
             res.send(user)
         })
         .catch(err => {
@@ -179,7 +189,7 @@ app.post(BASE_AUTH_API_URL + '/login', (req, res) => {
 })
 
 // User logout
-app.post(BASE_AUTH_API_URL + '/logout', (req, res) => {
+app.post(BASE_API_URL_AUTH + '/logout', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if(! loggedInUser) {
         const message = 'Cannot logout: Not logged in'
@@ -188,12 +198,12 @@ app.post(BASE_AUTH_API_URL + '/logout', (req, res) => {
     }
     res.clearCookie('loginToken')
     delete loggedInUser.password
-    loggerService.info(`Logout username='${loggedInUser.username}'`)
+    loggerService.info(`Logout user '${loggedInUser.username}'`)
     res.send(loggedInUser)
 })
 
 // User list
-app.get(BASE_USER_API_URL, (req, res) => {
+app.get(BASE_API_URL_USER, (req, res) => {
     userService.query()
         .then(users => {
             loggerService.info('Get users list')
