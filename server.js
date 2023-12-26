@@ -3,6 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { userService } from './services/user.service.js'
 import { toyService } from './services/toy.service.js'
+import { loggerService } from './services/logger.service.js'
 
 
 const BASE_API_URL = '/api/'
@@ -35,7 +36,11 @@ app.use(express.json())
 // Toy create
 app.post(BASE_TOY_API_URL, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) return res.status(401).send('Cannot add toy: Not logged in')
+    if (! loggedInUser) {
+        const message = 'Cannot add toy: Not logged in'
+        loggerService.error(message)
+        return res.status(401).send(message)
+    }
     const newToy = {
         name: req.body.name,
         description: req.body.description,
@@ -43,10 +48,13 @@ app.post(BASE_TOY_API_URL, (req, res) => {
     }
     toyService.save(newToy, loggedInUser)
         .then(toy => {
+            loggerService.info(`Create toy with id='${toy._id}'`)
             res.send(toy)
         })
         .catch(err => {
-            res.status(400).send(`Cannot create toy: ${err}`)
+            const message = `Cannot create toy: ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 
@@ -55,17 +63,24 @@ app.get(BASE_TOY_API_URL + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     toyService.get(toyId)
         .then(toy => {
+            loggerService.info(`Get toy with id='${toyId}'`)
             res.send(toy)
         })
         .catch(err => {
-            res.status(400).send(`Cannot get toy with id='${toyId}': ${err}`)
+            const message = `Cannot get toy with id='${toyId}': ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 
 // Toy update
 app.put(BASE_TOY_API_URL, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) return res.status(401).send('Cannot update toy: Not logged in')
+    if (! loggedInUser) {
+        const message = 'Cannot update toy: Not logged in'
+        loggerService.error(message)
+        return res.status(401).send(message)
+    }
     const updatedToy = {
         _id: req.body._id,
         name: req.body.name,
@@ -74,10 +89,13 @@ app.put(BASE_TOY_API_URL, (req, res) => {
     }
     toyService.save(updatedToy, loggedInUser)
         .then(toy => {
+            loggerService.info(`Update toy with id='${req.body._id}'`)
             res.send(toy)
         })
         .catch(err => {
-            res.status(400).send(`Cannot update toy with id='${req.body._id}': ${err}`)
+            const message = `Cannot update toy with id='${req.body._id}': ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 
@@ -85,13 +103,20 @@ app.put(BASE_TOY_API_URL, (req, res) => {
 app.delete(BASE_TOY_API_URL + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) return res.status(401).send('Cannot remove toy: Not logged in')
+    if (! loggedInUser) {
+        const message = 'Cannot remove toy: Not logged in'
+        loggerService.error(message)
+        return res.status(401).send(message)
+    }
     toyService.remove(toyId, loggedInUser)
         .then(toy => {
+            loggerService.info(`Remove toy with id='${toyId}'`)
             res.send(toy)
         })
         .catch(err => {
-            res.status(400).send(`Cannot remove toy: ${err}`)
+            const message = `Cannot update toy with id='${toyId}': ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 
@@ -99,10 +124,13 @@ app.delete(BASE_TOY_API_URL + '/:toyId', (req, res) => {
 app.get(BASE_TOY_API_URL, (req, res) => {
     toyService.query()
         .then(toys => {
+            loggerService.info(`Get toys`)
             res.send(toys)
         })
         .catch(err => {
-            res.status(400).send(`Cannot get toys: ${err}`)
+            const message = `Cannot get toys: ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 // ----------
@@ -117,35 +145,50 @@ app.post(BASE_AUTH_API_URL + '/signup', (req, res) => {
         .then(user => {
             const loginToken = userService.getLoginToken(user)
             res.cookie('loginToken', loginToken)
+            loggerService.info(`Signup username='${user.username}'`)
             res.send(user)
         })
         .catch(err => {
-            res.status(400).send(`Cannot signup: ${err}`)
+            const message = `Cannot signup: ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 
 // User login
 app.post(BASE_AUTH_API_URL + '/login', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if(loggedInUser) return res.status(401).send('Cannot login: Already logged in')
+    if(loggedInUser) {
+        const message = 'Cannot login: Already logged in'
+        loggerService.error(message)
+        return res.status(401).send(message)
+    }
     const formUser = req.body
     userService.checkLogin(formUser)
         .then(user => {
             const loginToken = userService.getLoginToken(user)
             res.cookie('loginToken', loginToken)
+            loggerService.info(`Login username='${user.username}'`)
             res.send(user)
         })
         .catch(err => {
-            res.status(401).send(`Cannot login: ${err}`)
+            const message = `Cannot login: ${err}`
+            loggerService.error(message)
+            res.status(401).send(message)
         })
 })
 
 // User logout
 app.post(BASE_AUTH_API_URL + '/logout', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if(! loggedInUser) return res.status(401).send('Cannot logout: Not logged in')
+    if(! loggedInUser) {
+        const message = 'Cannot logout: Not logged in'
+        loggerService.error(message)
+        return res.status(401).send(message)
+    }
     res.clearCookie('loginToken')
     delete loggedInUser.password
+    loggerService.info(`Logout username='${loggedInUser.username}'`)
     res.send(loggedInUser)
 })
 
@@ -153,10 +196,13 @@ app.post(BASE_AUTH_API_URL + '/logout', (req, res) => {
 app.get(BASE_USER_API_URL, (req, res) => {
     userService.query()
         .then(users => {
+            loggerService.info('Get users')
             res.send(users)
         })
         .catch(err => {
-            res.status(400).send(`Cannot get users: ${err}`)
+            const message = `Cannot get users: ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 // ----------
