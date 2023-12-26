@@ -87,14 +87,15 @@ function save(toy, loggedInUser) {
                 const toyIdx = toys.findIndex(_toy => _toy._id === toy._id)
                 if (toyIdx < 0) return Promise.reject('No such toy')
                 const toyToEdit = toys[toyIdx]
+                console.log(toy)
                 for (let [key, value] of Object.entries(toy)) {
-                    if (value !== undefined) toyToEdit[key] = value
+                    if (value) toyToEdit[key] = value
                 }
                 toy = toyToEdit
             } else {
                 const newToy = getNewToy()
                 for (let [key, value] of Object.entries(toy)) {
-                    if (value !== undefined) newToy[key] = value
+                    if (value) newToy[key] = value
                 }
                 newToy._id = utilService.makeId()
                 toys.unshift(newToy)

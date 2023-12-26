@@ -1,6 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import { userService } from './services/user.service.js'
+import { toyService } from './services/toy.service.js'
 
 
 const BASE_API_URL = '/api/'
@@ -56,7 +58,7 @@ app.get(BASE_TOY_API_URL + '/:toyId', (req, res) => {
             res.send(toy)
         })
         .catch(err => {
-            req.status(400).send(`Cannot get toy with id='${toyId}': ${err}`)
+            res.status(400).send(`Cannot get toy with id='${toyId}': ${err}`)
         })
 })
 
@@ -124,15 +126,17 @@ app.post(BASE_AUTH_API_URL + '/signup', (req, res) => {
 
 // User login
 app.post(BASE_AUTH_API_URL + '/login', (req, res) => {
+    const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
+    if(loggedInUser) return res.status(401).send('Cannot login: Already logged in')
     const formUser = req.body
-    userService.save(formUser)
+    userService.checkLogin(formUser)
         .then(user => {
             const loginToken = userService.getLoginToken(user)
             res.cookie('loginToken', loginToken)
             res.send(user)
         })
         .catch(err => {
-            res.status(400).send(`Cannot login: ${err}`)
+            res.status(401).send(`Cannot login: ${err}`)
         })
 })
 
@@ -141,7 +145,8 @@ app.post(BASE_AUTH_API_URL + '/logout', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if(! loggedInUser) return res.status(401).send('Cannot logout: Not logged in')
     res.clearCookie('loginToken')
-    res.send('Logged out')
+    delete loggedInUser.password
+    res.send(loggedInUser)
 })
 
 // User list

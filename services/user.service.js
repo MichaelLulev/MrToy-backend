@@ -87,7 +87,7 @@ function validateLoginToken(loginToken) {
         const strUser = cryptr.decrypt(loginToken)
         var user = JSON.parse(strUser)
     } catch (err) {
-        console.error(err)
+        console.error(`validateLoginToken - ${err.name}: ${err.message}`)
         var user = null
     }
     return user
