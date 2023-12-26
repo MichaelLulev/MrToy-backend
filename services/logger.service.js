@@ -1,0 +1,31 @@
+import fs from 'fs/promises'
+
+export const loggerService = {
+    debug:  (...args) => logToFile('DEBUG', ...args),
+    info:   (...args) => logToFile('INFO', ...args),
+    warn:   (...args) => logToFile('WARN', ...args),
+    error:  (...args) => logToFile('ERROR', ...args),
+}
+
+const LOGS_DIR = './logs'
+const LOG_PATH = `${LOGS_DIR}/backend-${new Date().toISOString()}.log`
+
+function logToFile(level, ...args) {
+    const strs = args.map(arg => {
+        if (typeof arg === 'string' || isError(arg)) return arg
+        else return JSON.stringify(arg)
+    })
+    const message = `${getTime()} - ${level} - ${strs.join(' | ')}\n`
+    console.log(message)
+    return fs.stat(dir)
+        .catch(() => fs.mkdir(dir))
+        .then(() => fs.appendFile(LOG_PATH, strElements, 'utf-8'))
+}
+
+function isError(arg) {
+    return arg && arg.stack && arg.message
+}
+
+function getTime() {
+    return new Date().toLocaleString()
+}
