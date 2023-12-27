@@ -1,8 +1,10 @@
-import fs from 'fs/promises'
+import fs from 'fs'
+import fsprm from 'fs/promises'
 import { loggerService } from './logger.service.js'
 
 export const utilService = {
     makeId,
+    getRandInt,
     loadFromFile,
     saveToFile,
 }
@@ -16,8 +18,12 @@ function makeId(length = 8) {
     return id
 }
 
+function getRandInt(max, min=0) {
+    return Math.floor(Math.random() * (max - min) + min)
+}
+
 function loadFromFile(dir, path, elementsCreator) {
-    return fs.readFile(path, 'utf-8')
+    return fsprm.readFile(path, 'utf-8')
         .then(res => {
             let elements = JSON.parse(res)
             if (! elements || elements.length === 0) return Promise.reject('No elements in path ' + path)
@@ -33,7 +39,13 @@ function loadFromFile(dir, path, elementsCreator) {
 function saveToFile(dir, path, elements=[]) {
     loggerService.info('Saving elements to path ' + path)
     const strElements = JSON.stringify(elements, null, '\t')
-    return fs.stat(dir)
-        .catch(() => fs.mkdir(dir))
-        .then(() => fs.writeFile(path, strElements, 'utf-8'))
+    // return fsprm.stat(dir)
+    //     .catch(() => fsprm.mkdir(dir))
+    //     .then(() => fsprm.writeFile(path, strElements, 'utf-8'))
+    try {
+        fs.statSync(dir)
+    } catch (err) {
+        fs.mkdirSync(dir)
+    }
+    return fsprm.writeFile(path, strElements, 'utf-8')
 }

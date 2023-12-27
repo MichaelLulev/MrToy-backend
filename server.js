@@ -220,6 +220,6 @@ app.get(BASE_API_URL_USER, (req, res) => {
 // ----------
 
 
-const PORT = 3030
+const PORT = process.env.PORT || 3030
 
 app.listen(PORT, () => loggerService.info(`Server ready at port ${PORT}`))

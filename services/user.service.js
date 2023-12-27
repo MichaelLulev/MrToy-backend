@@ -2,8 +2,13 @@ import Cryptr from 'cryptr'
 import { utilService } from './util.service.js'
 import { defaultUsers } from '../default/users.js'
 
+
+const cryptr = new Cryptr(process.env.SECRET || `${Date.now()}`)
+
+
 const DATA_DIR = './data'
 const USERS_PATH = DATA_DIR + '/users.json'
+
 
 export const userService = {
     query,
@@ -14,7 +19,9 @@ export const userService = {
     validateLoginToken,
 }
 
+
 var prmUsers = _loadUsers()
+
 
 function _loadUsers() {
     return utilService.loadFromFile(DATA_DIR, USERS_PATH, () => defaultUsers)
@@ -73,8 +80,6 @@ function checkLogin({ username, password}) {
             return user
         })
 }
-
-const cryptr = new Cryptr(process.env.ENCRYPTION_KEY || 'EncryptionKey')
 
 function getLoginToken(user) {
     const strUser = JSON.stringify(user)
