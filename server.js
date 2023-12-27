@@ -6,10 +6,10 @@ import { toyService } from './services/toy.service.js'
 import { loggerService } from './services/logger.service.js'
 
 
-const BASE_API_URL = '/api/'
-const BASE_API_URL_TOY = BASE_API_URL + 'toy'
-const BASE_API_URL_AUTH = BASE_API_URL + 'auth'
-const BASE_API_URL_USER = BASE_API_URL + 'user'
+const BASE_URL_API = '/api/'
+const BASE_URL_TOY_API = BASE_URL_API + 'toy'
+const BASE_URL_AUTH_API = BASE_URL_API + 'auth'
+const BASE_URL_USER_API = BASE_URL_API + 'user'
 
 
 const app = express()
@@ -34,7 +34,7 @@ app.use(express.json())
 // ----------
 
 // Toy create
-app.post(BASE_API_URL_TOY, (req, res) => {
+app.post(BASE_URL_TOY_API, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
         var message = 'Cannot add toy: Not logged in'
@@ -56,7 +56,7 @@ app.post(BASE_API_URL_TOY, (req, res) => {
         })
 })
 
-app.get(BASE_API_URL_TOY + '/label', (req, res) => {
+app.get(BASE_URL_TOY_API + '/label', (req, res) => {
     toyService.getAllLabels()
         .then(labels => {
             loggerService.info(`Get labels`)
@@ -70,7 +70,7 @@ app.get(BASE_API_URL_TOY + '/label', (req, res) => {
 })
 
 // Toy read
-app.get(BASE_API_URL_TOY + '/:toyId', (req, res) => {
+app.get(BASE_URL_TOY_API + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     toyService.get(toyId)
         .then(toy => {
@@ -85,7 +85,7 @@ app.get(BASE_API_URL_TOY + '/:toyId', (req, res) => {
 })
 
 // Toy update
-app.put(BASE_API_URL_TOY, (req, res) => {
+app.put(BASE_URL_TOY_API, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
         var message = 'Cannot update toy: Not logged in'
@@ -95,7 +95,7 @@ app.put(BASE_API_URL_TOY, (req, res) => {
         loggerService.error(message)
         return res.status(401).send(message)
     }
-    toyService.save(updatedToy)
+    toyService.save(req.body)
         .then(toy => {
             loggerService.info(`Update toy with id='${req.body._id}'`)
             res.send(toy)
@@ -108,7 +108,7 @@ app.put(BASE_API_URL_TOY, (req, res) => {
 })
 
 // Toy delete
-app.delete(BASE_API_URL_TOY + '/:toyId', (req, res) => {
+app.delete(BASE_URL_TOY_API + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
@@ -132,7 +132,7 @@ app.delete(BASE_API_URL_TOY + '/:toyId', (req, res) => {
 })
 
 // Toy list
-app.get(BASE_API_URL_TOY, (req, res) => {
+app.get(BASE_URL_TOY_API, (req, res) => {
     const filterBy = {
         text: req.query.text,
         stock: req.query.stock,
@@ -163,7 +163,7 @@ app.get(BASE_API_URL_TOY, (req, res) => {
 // ----------
 
 // User signup
-app.post(BASE_API_URL_AUTH + '/signup', (req, res) => {
+app.post(BASE_URL_AUTH_API + '/signup', (req, res) => {
     userService.save(req.body)
         .then(user => {
             res.cookie('loginToken', userService.getLoginToken(user))
@@ -178,7 +178,7 @@ app.post(BASE_API_URL_AUTH + '/signup', (req, res) => {
 })
 
 // User login
-app.post(BASE_API_URL_AUTH + '/login', (req, res) => {
+app.post(BASE_URL_AUTH_API + '/login', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if(loggedInUser) {
         const message = 'Cannot login: Already logged in'
@@ -199,7 +199,7 @@ app.post(BASE_API_URL_AUTH + '/login', (req, res) => {
 })
 
 // User update
-app.put(BASE_API_URL_USER + '/update', (req, res) => {
+app.put(BASE_URL_USER_API + '/update', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
         const message = 'Cannot update user: Not logged in'
@@ -219,7 +219,7 @@ app.put(BASE_API_URL_USER + '/update', (req, res) => {
 })
 
 // User logout
-app.post(BASE_API_URL_AUTH + '/logout', (req, res) => {
+app.post(BASE_URL_AUTH_API + '/logout', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if(! loggedInUser) {
         const message = 'Cannot logout: Not logged in'
@@ -233,7 +233,16 @@ app.post(BASE_API_URL_AUTH + '/logout', (req, res) => {
 })
 
 // User list
-app.get(BASE_API_URL_USER, (req, res) => {
+app.get(BASE_URL_USER_API, (req, res) => {
+    const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
+    if (! loggedInUser) {
+        var message = 'Cannot list users: Not logged in'
+    }
+    else if (! loggedInUser.isAdmin) var message = 'Cannot list users: Not admin'
+    if (message) {
+        loggerService.error(message)
+        return res.status(401).send(message)
+    }
     userService.query()
         .then(users => {
             loggerService.info('Get users list')

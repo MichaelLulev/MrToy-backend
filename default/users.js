@@ -12,9 +12,9 @@ const defaultUsers = [
         username: 'breadman',
         password: 'flourPower123',
         balance: 200,
-        isAdmin: false,
         cartItems: [],
         boughtItems: [],
+        isAdmin: false,
     },
     {
         _id: 'syrupy-skills-456',
@@ -22,9 +22,9 @@ const defaultUsers = [
         username: 'pancakeQueen',
         password: 'SyrupLover99',
         balance: 200,
-        isAdmin: false,
         cartItems: [],
         boughtItems: [],
+        isAdmin: false,
     },
     {
         _id: 'mars-maverick-789',
@@ -32,9 +32,9 @@ const defaultUsers = [
         username: 'spaceCadet',
         password: 'MarsIsMyHome!2023',
         balance: 200,
-        isAdmin: false,
         cartItems: [],
         boughtItems: [],
+        isAdmin: false,
     },
     {
         _id: 'purrfect-pal-101',
@@ -42,9 +42,9 @@ const defaultUsers = [
         username: 'catWhisperer',
         password: 'PurrPurrMeow',
         balance: 200,
-        isAdmin: false,
         cartItems: [],
         boughtItems: [],
+        isAdmin: false,
     },
     {
         _id: 'byte-boss-202',
@@ -52,8 +52,8 @@ const defaultUsers = [
         username: 'adminGuru',
         password: 'SuperSecure!2023',
         balance: 200,
-        isAdmin: true,
         cartItems: [],
         boughtItems: [],
+        isAdmin: true,
     }
 ]

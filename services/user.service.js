@@ -43,13 +43,17 @@ function query() {
 function save(user) {
     return query().then(users => {
             if (user._id) {
-                var _user = users.find(_user => _user._id === user._id)
-                if (! _user) {
+                const updatedUserIndex = users.findIndex(_user => _user._id === user._id)
+                const updatedUser = users[updatedUserIndex]
+                if (! updatedUser) {
                     return Promise.reject('No such user')
                 }
-                for (const key of Object.keys(_getNewUser())) {
-                    if (user[key]) _user[key] = user[key]
+                console.log(user)
+                for (const key in _getNewUser()) {
+                    if (user[key] || user[key] === 0) updatedUser[key] = user[key]
                 }
+                users.splice(updatedUserIndex, 1, updatedUser)
+                user = updatedUser
             } else {
                 if (users.find(_user => _user.username === user.username)) {
                     return Promise.reject('User already exsists')
@@ -58,25 +62,26 @@ function save(user) {
                 else if (! user.username) var message = 'Missing username'
                 else if (! user.password) var message = 'Missing password'
                 if (message) return Promise.reject(message)
-                var _user = _getNewUser()
-                _user._id = utilService.makeId()
-                _user.fullName = user.fullName
-                _user.username = user.username
-                _user.password = user.password
-                _user.isAdmin = false
+                const newUser = _getNewUser()
+                newUser._id = utilService.makeId()
+                newUser.fullName = user.fullName
+                newUser.username = user.username
+                newUser.password = user.password
+                newUser.isAdmin = false
+                users.unshift(newUser)
+                user = newUser
             }
-            users.unshift(_user)
-            _user = { ..._user }
-            delete _user.password
-            return _saveUsers(users).then(() => _user)
+            user = { ...user }
+            delete user.password
+            return _saveUsers(users).then(() => user)
         })
 }
 
 function _getNewUser() {
     return {
-        fullName: user.fullName,
-        username: user.username,
-        password: user.password,
+        fullName: '',
+        username: '',
+        password: '',
         balance: 200,
         cartItems: [],
         boughtItems: [],

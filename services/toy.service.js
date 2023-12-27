@@ -40,7 +40,6 @@ function query(filterBy, sortBy, pageInfo) {
 }
 
 function filter(toys, filterBy) {
-    console.log(filterBy)
     if (! filterBy) return toys
     return toys.filter(toy => {
         let isStockMatch
@@ -99,7 +98,7 @@ function save(toy) {
                 if (toyIdx < 0) return Promise.reject('No such toy')
                 const toyToEdit = toys[toyIdx]
                 for (let [key, value] of Object.entries(toy)) {
-                    if (value) toyToEdit[key] = value
+                    if (value || value === 0) toyToEdit[key] = value
                 }
                 toy = toyToEdit
             } else {
