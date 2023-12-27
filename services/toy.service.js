@@ -11,6 +11,7 @@ export const toyService = {
     get,
     save,
     remove,
+    getAllLabels,
 }
 
 
@@ -39,6 +40,7 @@ function query(filterBy, sortBy, pageInfo) {
 }
 
 function filter(toys, filterBy) {
+    console.log(filterBy)
     if (! filterBy) return toys
     return toys.filter(toy => {
         let isStockMatch
@@ -48,7 +50,8 @@ function filter(toys, filterBy) {
         const text =                RegExp(filterBy.text, 'i')
         const isTextInName =        text.test(toy.name)
         const isTextInDescription = text.test(toy.description)
-        return (isTextInName || isTextInDescription) && isStockMatch
+        const isLabelMatch =        filterBy.label === 'any' || toy.labels.includes(filterBy.label)
+        return (isTextInName || isTextInDescription) && isStockMatch && isLabelMatch
     })
 }
 
@@ -100,7 +103,7 @@ function save(toy, loggedInUser) {
                 }
                 toy = toyToEdit
             } else {
-                const newToy = getNewToy()
+                const newToy = _getNewToy()
                 for (let [key, value] of Object.entries(toy)) {
                     if (value) newToy[key] = value
                 }
@@ -123,7 +126,13 @@ function remove(toyId, loggedInUser) {
         })
 }
 
-function getNewToy() {
+function getAllLabels() {
+    return query().then(({ toys }) => {
+        return Array.from(new Set(toys.map(toy => toy.labels).flat())).sort((l1, l2) => l1.localeCompare(l2))
+    })
+}
+
+function _getNewToy() {
     return {
         name: '',
         description: '',

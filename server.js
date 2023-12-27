@@ -58,6 +58,19 @@ app.post(BASE_API_URL_TOY, (req, res) => {
         })
 })
 
+app.get(BASE_API_URL_TOY + '/label', (req, res) => {
+    toyService.getAllLabels()
+        .then(labels => {
+            loggerService.info(`Get labels`)
+            res.send(labels)
+        })
+        .catch(err => {
+            const message = `Cannot get labels: ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
+        })
+})
+
 // Toy read
 app.get(BASE_API_URL_TOY + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
@@ -125,6 +138,7 @@ app.get(BASE_API_URL_TOY, (req, res) => {
     const filterBy = {
         text: req.query.text,
         stock: req.query.stock,
+        label: req.query.label,
     }
     const sortBy = {
         field: req.query.field,
