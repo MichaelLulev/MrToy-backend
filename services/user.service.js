@@ -54,6 +54,8 @@ function save(user) {
             }
             newUser._id = utilService.makeId()
             newUser.isAdmin = false
+            newUser.cartItems = []
+            newUser.boughtItems = []
             users.unshift(newUser)
             user = { ...newUser }
             delete user.password
