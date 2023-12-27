@@ -76,6 +76,7 @@ function getPage(toys, pageInfo) {
     const startIdx = (pageNum - 1) * toysPerPage
     const endIdx = startIdx + toysPerPage
     const toyPage = {
+        resultsNum: toys.length,
         toys: toys.slice(startIdx, endIdx),
         pageNum,
         lastPageNum,
