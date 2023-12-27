@@ -1,8 +1,10 @@
 import { utilService } from './util.service.js'
-import { defaultToys } from '../default/toys.js'
+import { getDefaultToys } from '../default/toys.js'
+
 
 const DATA_DIR = './data'
 const TOYS_PATH = `${DATA_DIR}/toys.json`
+
 
 export const toyService = {
     query,
@@ -11,10 +13,12 @@ export const toyService = {
     remove,
 }
 
+
 var prmToys = _loadToys()
 
+
 function _loadToys() {
-    return utilService.loadFromFile(DATA_DIR, TOYS_PATH, () => defaultToys)
+    return utilService.loadFromFile(DATA_DIR, TOYS_PATH, getDefaultToys)
 }
 
 function _saveToys() {

@@ -32,7 +32,7 @@ function loadFromFile(dir, path, elementsCreator) {
         .catch(err => {
             loggerService.info('Creating elements')
             const elements = elementsCreator()
-            return saveToFile(dir, path, elements).then(() => elements)
+            return saveToFile(dir, path, elements)
         })
 }
 
@@ -47,5 +47,5 @@ function saveToFile(dir, path, elements=[]) {
     } catch (err) {
         fs.mkdirSync(dir)
     }
-    return fsprm.writeFile(path, strElements, 'utf-8')
+    return fsprm.writeFile(path, strElements, 'utf-8').then(() => elements)
 }

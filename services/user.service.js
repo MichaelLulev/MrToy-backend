@@ -1,9 +1,9 @@
 import Cryptr from 'cryptr'
 import { utilService } from './util.service.js'
-import { defaultUsers } from '../default/users.js'
+import { getDefaultUsers } from '../default/users.js'
 
 
-const cryptr = new Cryptr(process.env.SECRET || `${Date.now()}`)
+const cryptr = new Cryptr(process.env.SECRET || `SuperSecret`)
 
 
 const DATA_DIR = './data'
@@ -24,7 +24,7 @@ var prmUsers = _loadUsers()
 
 
 function _loadUsers() {
-    return utilService.loadFromFile(DATA_DIR, USERS_PATH, () => defaultUsers)
+    return utilService.loadFromFile(DATA_DIR, USERS_PATH, getDefaultUsers)
 }
 
 function _saveUsers() {

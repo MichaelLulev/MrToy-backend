@@ -1,4 +1,11 @@
-export const defaultUsers = [
+
+
+export function getDefaultUsers() {
+    return JSON.parse(JSON.stringify(defaultUsers))
+}
+
+
+const defaultUsers = [
     {
         _id: 'doughy-delights-123',
         fullName: 'John Dough',

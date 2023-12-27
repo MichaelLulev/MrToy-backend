@@ -1,7 +1,12 @@
 import { utilService } from "../services/util.service.js"
 
 
-export const defaultToys = [
+export function getDefaultToys() {
+    return JSON.parse(JSON.stringify(defaultToys))
+}
+
+
+const defaultToys = [
     {
         _id: utilService.makeId(),
         name: "Plush Teddy Bear",
