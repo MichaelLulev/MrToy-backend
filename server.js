@@ -37,16 +37,14 @@ app.use(express.json())
 app.post(BASE_API_URL_TOY, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
-        const message = 'Cannot add toy: Not logged in'
+        var message = 'Cannot add toy: Not logged in'
+    }
+    else if (! loggedInUser.isAdmin) var message = 'Cannot add toy: Not admin'
+    if (message) {
         loggerService.error(message)
         return res.status(401).send(message)
     }
-    const newToy = {
-        name: req.body.name,
-        description: req.body.description,
-        price: +req.body.price,
-    }
-    toyService.save(newToy, loggedInUser)
+    toyService.save(req.body)
         .then(toy => {
             loggerService.info(`Create toy with id='${toy._id}'`)
             res.send(toy)
@@ -90,17 +88,14 @@ app.get(BASE_API_URL_TOY + '/:toyId', (req, res) => {
 app.put(BASE_API_URL_TOY, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
-        const message = 'Cannot update toy: Not logged in'
+        var message = 'Cannot update toy: Not logged in'
+    }
+    else if (! loggedInUser.isAdmin) var message = 'Cannot update toy: Not admin'
+    if (message) {
         loggerService.error(message)
         return res.status(401).send(message)
     }
-    const updatedToy = {
-        _id: req.body._id,
-        name: req.body.name,
-        description: req.body.description,
-        price: +req.body.price,
-    }
-    toyService.save(updatedToy, loggedInUser)
+    toyService.save(updatedToy)
         .then(toy => {
             loggerService.info(`Update toy with id='${req.body._id}'`)
             res.send(toy)
@@ -117,11 +112,14 @@ app.delete(BASE_API_URL_TOY + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) {
-        const message = 'Cannot remove toy: Not logged in'
+        var message = 'Cannot remove toy: Not logged in'
+    }
+    else if (! loggedInUser.isAdmin) var message = 'Cannot remove toy: Not admin'
+    if (message) {
         loggerService.error(message)
         return res.status(401).send(message)
     }
-    toyService.remove(toyId, loggedInUser)
+    toyService.remove(toyId)
         .then(toy => {
             loggerService.info(`Remove toy with id='${toyId}'`)
             res.send(toy)
@@ -166,11 +164,9 @@ app.get(BASE_API_URL_TOY, (req, res) => {
 
 // User signup
 app.post(BASE_API_URL_AUTH + '/signup', (req, res) => {
-    const formUser = req.body
-    userService.save(formUser)
+    userService.save(req.body)
         .then(user => {
-            const loginToken = userService.getLoginToken(user)
-            res.cookie('loginToken', loginToken)
+            res.cookie('loginToken', userService.getLoginToken(user))
             loggerService.info(`Signup user '${user.username}'`)
             res.send(user)
         })
@@ -189,11 +185,9 @@ app.post(BASE_API_URL_AUTH + '/login', (req, res) => {
         loggerService.error(message)
         return res.status(401).send(message)
     }
-    const formUser = req.body
-    userService.checkLogin(formUser)
+    userService.checkLogin(req.body)
         .then(user => {
-            const loginToken = userService.getLoginToken(user)
-            res.cookie('loginToken', loginToken)
+            res.cookie('loginToken', userService.getLoginToken(user))
             loggerService.info(`Login user '${user.username}'`)
             res.send(user)
         })
@@ -201,6 +195,26 @@ app.post(BASE_API_URL_AUTH + '/login', (req, res) => {
             const message = `Cannot login: ${err}`
             loggerService.error(message)
             res.status(401).send(message)
+        })
+})
+
+// User update
+app.put(BASE_API_URL_USER + '/update', (req, res) => {
+    const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
+    if (! loggedInUser) {
+        const message = 'Cannot update user: Not logged in'
+        loggerService.error(message)
+        return res.status(401).send(message)
+    }
+    userService.save(req.body)
+        .then(user => {
+            loggerService.info(`Update user '${user.username}'`)
+            res.send(user)
+        })
+        .catch(err => {
+            const message = `Cannot update user: ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
         })
 })
 

@@ -92,8 +92,7 @@ function get(toyId) {
         })
 }
 
-function save(toy, loggedInUser) {
-    if (! loggedInUser.isAdmin) return Promise.reject('Not admin')
+function save(toy) {
     return query().then(({ toys }) => {
             if (toy._id) {
                 const toyIdx = toys.findIndex(_toy => _toy._id === toy._id)
@@ -116,8 +115,7 @@ function save(toy, loggedInUser) {
         })
 }
 
-function remove(toyId, loggedInUser) {
-    if (! loggedInUser.isAdmin) return Promise.reject('Not admin')
+function remove(toyId) {
     return query().then(({ toys }) => {
             const toyIdx = toys.findIndex(toy => toy._id === toyId)
             if (toyIdx < 0) return Promise.reject('No such toy')
