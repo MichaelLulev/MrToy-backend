@@ -48,7 +48,6 @@ function save(user) {
                 if (! updatedUser) {
                     return Promise.reject('No such user')
                 }
-                console.log(user)
                 for (const key in _getNewUser()) {
                     if (user[key] || user[key] === 0) updatedUser[key] = user[key]
                 }
@@ -83,6 +82,7 @@ function _getNewUser() {
         username: '',
         password: '',
         balance: 200,
+        cartTotal: 0,
         cartItems: [],
         boughtItems: [],
     }

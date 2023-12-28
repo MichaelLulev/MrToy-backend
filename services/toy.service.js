@@ -62,7 +62,8 @@ function sort(toys, sortBy) {
         switch (field) {
             case 'name':
             case 'description': return toy1[field].localeCompare(toy2[field]) * dirMult
-            case 'price': return (toy1[field] - toy2[field]) * dirMult
+            case 'price': 
+            case 'stock': return (toy1[field] - toy2[field]) * dirMult
         }
     })
 }
@@ -97,7 +98,10 @@ function save(toy) {
                 const toyIdx = toys.findIndex(_toy => _toy._id === toy._id)
                 if (toyIdx < 0) return Promise.reject('No such toy')
                 const toyToEdit = toys[toyIdx]
-                for (let [key, value] of Object.entries(toy)) {
+                if (toy.stockDiff) {
+                    toyToEdit.stock += toy.stockDiff
+                }
+                else for (let [key, value] of Object.entries(toy)) {
                     if (value || value === 0) toyToEdit[key] = value
                 }
                 toy = toyToEdit
@@ -136,5 +140,6 @@ function _getNewToy() {
         description: '',
         price: 0,
         stock: 0,
+        labels: [],
     }
 }

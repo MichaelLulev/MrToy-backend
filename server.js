@@ -83,8 +83,8 @@ app.get(BASE_URL_TOY_API + '/:toyId', (req, res) => {
 app.put(BASE_URL_TOY_API, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
     if (! loggedInUser) var message = 'Cannot update toy: Not logged in'
-    else if (! loggedInUser.isAdmin) var message = 'Cannot update toy: Not admin'
-    else if (req.body.stock < 0) 'Cannot update toy: Out of stock'
+    else if (! loggedInUser.isAdmin) req.body = { _id: req.body._id, stockDiff: req.body.stockDiff }
+    else if (! req.body.stockDiff && req.body.stock < 0) 'Cannot update toy: Out of stock'
     if (message) return loggerService.error(message) || res.status(401).send(message)
     toyService.save(req.body)
         .then(toy => {
