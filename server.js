@@ -36,14 +36,9 @@ app.use(express.json())
 // Toy create
 app.post(BASE_URL_TOY_API, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) {
-        var message = 'Cannot add toy: Not logged in'
-    }
+    if (! loggedInUser) var message = 'Cannot add toy: Not logged in'
     else if (! loggedInUser.isAdmin) var message = 'Cannot add toy: Not admin'
-    if (message) {
-        loggerService.error(message)
-        return res.status(401).send(message)
-    }
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     toyService.save(req.body)
         .then(toy => {
             loggerService.info(`Create toy with id='${toy._id}'`)
@@ -87,14 +82,10 @@ app.get(BASE_URL_TOY_API + '/:toyId', (req, res) => {
 // Toy update
 app.put(BASE_URL_TOY_API, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) {
-        var message = 'Cannot update toy: Not logged in'
-    }
+    if (! loggedInUser) var message = 'Cannot update toy: Not logged in'
     else if (! loggedInUser.isAdmin) var message = 'Cannot update toy: Not admin'
-    if (message) {
-        loggerService.error(message)
-        return res.status(401).send(message)
-    }
+    else if (req.body.stock < 0) 'Cannot update toy: Out of stock'
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     toyService.save(req.body)
         .then(toy => {
             loggerService.info(`Update toy with id='${req.body._id}'`)
@@ -111,14 +102,9 @@ app.put(BASE_URL_TOY_API, (req, res) => {
 app.delete(BASE_URL_TOY_API + '/:toyId', (req, res) => {
     const toyId = req.params.toyId
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) {
-        var message = 'Cannot remove toy: Not logged in'
-    }
+    if (! loggedInUser) var message = 'Cannot remove toy: Not logged in'
     else if (! loggedInUser.isAdmin) var message = 'Cannot remove toy: Not admin'
-    if (message) {
-        loggerService.error(message)
-        return res.status(401).send(message)
-    }
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     toyService.remove(toyId)
         .then(toy => {
             loggerService.info(`Remove toy with id='${toyId}'`)
@@ -180,11 +166,8 @@ app.post(BASE_URL_AUTH_API + '/signup', (req, res) => {
 // User login
 app.post(BASE_URL_AUTH_API + '/login', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if(loggedInUser) {
-        const message = 'Cannot login: Already logged in'
-        loggerService.error(message)
-        return res.status(401).send(message)
-    }
+    if (loggedInUser) var message = 'Cannot login: Already logged in'
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     userService.checkLogin(req.body)
         .then(user => {
             res.cookie('loginToken', userService.getLoginToken(user))
@@ -201,11 +184,9 @@ app.post(BASE_URL_AUTH_API + '/login', (req, res) => {
 // User update
 app.put(BASE_URL_USER_API + '/update', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) {
-        const message = 'Cannot update user: Not logged in'
-        loggerService.error(message)
-        return res.status(401).send(message)
-    }
+    if (! loggedInUser) var message = 'Cannot update user: Not logged in'
+    else if (req.body.balance < 0) var message = 'Cannot update user: Insufficient balance'
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     userService.save(req.body)
         .then(user => {
             loggerService.info(`Update user '${user.username}'`)
@@ -221,11 +202,8 @@ app.put(BASE_URL_USER_API + '/update', (req, res) => {
 // User logout
 app.post(BASE_URL_AUTH_API + '/logout', (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if(! loggedInUser) {
-        const message = 'Cannot logout: Not logged in'
-        loggerService.error(message)
-        return res.status(401).send(message)
-    }
+    if(! loggedInUser) var message = 'Cannot logout: Not logged in'
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     res.clearCookie('loginToken')
     delete loggedInUser.password
     loggerService.info(`Logout user '${loggedInUser.username}'`)
@@ -235,14 +213,9 @@ app.post(BASE_URL_AUTH_API + '/logout', (req, res) => {
 // User list
 app.get(BASE_URL_USER_API, (req, res) => {
     const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) {
-        var message = 'Cannot list users: Not logged in'
-    }
+    if (! loggedInUser) var message = 'Cannot list users: Not logged in'
     else if (! loggedInUser.isAdmin) var message = 'Cannot list users: Not admin'
-    if (message) {
-        loggerService.error(message)
-        return res.status(401).send(message)
-    }
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     userService.query()
         .then(users => {
             loggerService.info('Get users list')

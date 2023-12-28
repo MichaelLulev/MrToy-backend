@@ -26,7 +26,7 @@ function logToFile(level, ...args) {
     } catch (err) {
         fs.mkdirSync(LOG_DIR)
     }
-    return fsprm.appendFile(LOG_PATH, message + '\n', 'utf-8')
+    fsprm.appendFile(LOG_PATH, message + '\n', 'utf-8')
 }
 
 function isError(arg) {
