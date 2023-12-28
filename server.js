@@ -119,10 +119,11 @@ app.delete(BASE_URL_TOY_API + '/:toyId', (req, res) => {
 
 // Toy list
 app.get(BASE_URL_TOY_API, (req, res) => {
+    console.log(req.query)
     const filterBy = {
         text: req.query.text,
         stock: req.query.stock,
-        label: req.query.label,
+        labels: JSON.parse(req.query.labels),
     }
     const sortBy = {
         field: req.query.field,

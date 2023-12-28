@@ -49,8 +49,8 @@ function filter(toys, filterBy) {
         const text =                RegExp(filterBy.text, 'i')
         const isTextInName =        text.test(toy.name)
         const isTextInDescription = text.test(toy.description)
-        const isLabelMatch =        filterBy.label === 'any' || toy.labels.includes(filterBy.label)
-        return (isTextInName || isTextInDescription) && isStockMatch && isLabelMatch
+        const isLabelsMatch =       ! filterBy.labels.length || toy.labels.some(label => filterBy.labels.includes(label))
+        return (isTextInName || isTextInDescription) && isStockMatch && isLabelsMatch
     })
 }
 
