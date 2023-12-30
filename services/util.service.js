@@ -10,12 +10,25 @@ export const utilService = {
 }
 
 function makeId(length = 8) {
+    const possible = getCharRange('A', 'Z') + getCharRange('a', 'z') + getCharRange('0', '9')
     var id = ''
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     for (var i = 0; i < length; i++) {
-        id += possible.charAt(Math.floor(Math.random() * possible.length))
+        id += getRandomChar(possible)
     }
     return id
+}
+
+function getRandomChar(string) {
+    const randIdx = getRandInt(string.length)
+    return string.charAt(randIdx)
+}
+
+function getCharRange(startChar, endChar) {
+    let charRange = ''
+    for (let i = startChar.charCodeAt(0); i <= endChar.charCodeAt(0); i++) {
+        charRange += String.fromCharCode(i)
+    }
+    return charRange
 }
 
 function getRandInt(max, min=0) {
@@ -39,9 +52,6 @@ function loadFromFile(dir, path, elementsCreator) {
 function saveToFile(dir, path, elements=[]) {
     loggerService.info('Saving elements to path ' + path)
     const strElements = JSON.stringify(elements, null, '\t')
-    // return fsprm.stat(dir)
-    //     .catch(() => fsprm.mkdir(dir))
-    //     .then(() => fsprm.writeFile(path, strElements, 'utf-8'))
     try {
         fs.statSync(dir)
     } catch (err) {

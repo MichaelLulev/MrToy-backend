@@ -1,6 +1,7 @@
 import fs from 'fs'
 import fsprm from 'fs/promises'
 
+
 export const loggerService = {
     debug:  (...args) => logToFile('DEBUG', ...args),
     info:   (...args) => logToFile('INFO', ...args),
@@ -8,8 +9,10 @@ export const loggerService = {
     error:  (...args) => logToFile('ERROR', ...args),
 }
 
+
 const LOG_DIR = './logs'
 const LOG_PATH = `${LOG_DIR}/${new Date().toISOString().split('T')[0]}.log`
+
 
 function logToFile(level, ...args) {
     const strs = args.map(arg => {
@@ -18,9 +21,6 @@ function logToFile(level, ...args) {
     })
     const message = `${getTime()} - ${level} - ${strs.join(' | ')}`
     console.log(message)
-    // return fsprm.stat(LOG_DIR)
-    //     .catch(() => fsprm.mkdir(LOG_DIR))
-    //     .then(() => fsprm.appendFile(LOG_PATH, message, 'utf-8'))
     try {
         fs.statSync(LOG_DIR)
     } catch (err) {
