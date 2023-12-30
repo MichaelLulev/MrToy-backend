@@ -212,10 +212,10 @@ app.post(BASE_URL_AUTH_API + '/logout', (req, res) => {
 
 // User list
 app.get(BASE_URL_USER_API, (req, res) => {
-    // const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    // if (! loggedInUser) var message = 'Cannot list users: Not logged in'
-    // else if (! loggedInUser.isAdmin) var message = 'Cannot list users: Not admin'
-    // if (message) return loggerService.error(message) || res.status(401).send(message)
+    const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
+    if (! loggedInUser) var message = 'Cannot list users: Not logged in'
+    else if (! loggedInUser.isAdmin) var message = 'Cannot list users: Not admin'
+    if (message) return loggerService.error(message) || res.status(401).send(message)
     userService.query()
         .then(users => {
             loggerService.info('Get users list')
