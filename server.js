@@ -212,10 +212,10 @@ app.post(BASE_URL_AUTH_API + '/logout', (req, res) => {
 
 // User list
 app.get(BASE_URL_USER_API, (req, res) => {
-    const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
-    if (! loggedInUser) var message = 'Cannot list users: Not logged in'
-    else if (! loggedInUser.isAdmin) var message = 'Cannot list users: Not admin'
-    if (message) return loggerService.error(message) || res.status(401).send(message)
+    // const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
+    // if (! loggedInUser) var message = 'Cannot list users: Not logged in'
+    // else if (! loggedInUser.isAdmin) var message = 'Cannot list users: Not admin'
+    // if (message) return loggerService.error(message) || res.status(401).send(message)
     userService.query()
         .then(users => {
             loggerService.info('Get users list')
@@ -223,6 +223,25 @@ app.get(BASE_URL_USER_API, (req, res) => {
         })
         .catch(err => {
             const message = `Cannot get users list: ${err}`
+            loggerService.error(message)
+            res.status(400).send(message)
+        })
+})
+
+// User read
+app.get(BASE_URL_USER_API + '/:userId', (req, res) => {
+    const loggedInUser = userService.validateLoginToken(req.cookies.loginToken)
+    if (! loggedInUser) var message = 'Cannot get user: Not logged in'
+    else if (loggedInUser._id !== req.params.userId) var message = 'Cannot get user: Wrong user'
+    if (message) return loggerService.error(message) || res.status(401).send(message)
+    const userId = req.params.userId
+    userService.get(userId)
+        .then(user => {
+            loggerService.info(`Get user with id='${userId}'`)
+            res.send(user)
+        })
+        .catch(err => {
+            const message = `Cannot get user with id='${userId}': ${err}`
             loggerService.error(message)
             res.status(400).send(message)
         })

@@ -12,6 +12,7 @@ const USERS_PATH = DATA_DIR + '/users.json'
 
 export const userService = {
     query,
+    get,
     save,
     checkLogin,
     getLoginToken,
@@ -38,6 +39,16 @@ function query() {
             }
             return users
         })
+}
+
+function get(userId) {
+    return query().then(users => {
+        let user = users.find(_user => _user._id === userId)
+        if (! user) return Promise.reject('No such user')
+        user = { ...user }
+        delete user.password
+        return user
+    })
 }
 
 function save(user) {
