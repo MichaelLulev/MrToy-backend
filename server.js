@@ -119,14 +119,26 @@ app.delete(BASE_URL_TOY_API + '/:toyId', (req, res) => {
 
 // Toy list
 app.get(BASE_URL_TOY_API, (req, res) => {
+    try {
+        var labels = JSON.parse(req.query.labels)
+    } catch (err) {
+        loggerService.error('Can\'t parse labels')
+        labels = []
+    }
+    try {
+        var isAscending = JSON.parse(req.query.isAscending)
+    } catch (err) {
+        loggerService.error('Can\'t parse isAscending')
+        isAscending = true
+    }
     const filterBy = {
         text: req.query.text,
         stock: req.query.stock,
-        labels: JSON.parse(req.query.labels),
+        labels,
     }
     const sortBy = {
         field: req.query.field,
-        isAscending: JSON.parse(req.query.isAscending),
+        isAscending,
     }
     const pageInfo = {
         pageNum: +req.query.pageNum,
