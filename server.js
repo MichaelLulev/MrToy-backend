@@ -123,13 +123,11 @@ app.get(BASE_URL_TOY_API, (req, res) => {
         var labels = JSON.parse(req.query.labels)
     } catch (err) {
         loggerService.error('Can\'t parse labels')
-        labels = []
     }
     try {
         var isAscending = JSON.parse(req.query.isAscending)
     } catch (err) {
         loggerService.error('Can\'t parse isAscending')
-        isAscending = true
     }
     const filterBy = {
         text: req.query.text,
