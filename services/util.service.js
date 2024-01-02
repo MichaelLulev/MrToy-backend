@@ -44,7 +44,7 @@ function loadFromFile(dir, path, elementsCreator) {
         })
         .catch(err => {
             loggerService.info('Creating elements')
-            const elements = elementsCreator()
+            const elements = elementsCreator().map(element => ({ _id: makeId(), ...element }))
             return saveToFile(dir, path, elements)
         })
 }
